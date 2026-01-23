@@ -7,16 +7,20 @@
 
 import SwiftUI
 
+
 struct ContentView: View {
+    @State private var selectedTab: TabItem = .home
+    
     var body: some View {
         VStack {
-            Image(systemName: "house.fill")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            CurvedText(text: "¡Hola Mundo Curvo!", radius: 100)
+                .frame(width: 200, height: 200) // Define el tamaño del contenedor
+            
+            // Puedes centrarlo si lo deseas
+                    
+            CustomTabBar(selectedTab: $selectedTab)
+                            .padding(.bottom, 8)
         }
-        .padding()
-        .background(.blue)
     }
 }
 
