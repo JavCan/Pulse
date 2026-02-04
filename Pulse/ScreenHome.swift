@@ -43,7 +43,7 @@ struct ScreenHome: View {
                 // Panic Attack button Section
                 ZStack {
                     // Líneas punteadas exteriores (desaparecen al expandir)
-                    Group {
+                    /*Group {
                         Circle()
                             .trim(from: 0.345, to: 0.629)
                             .stroke(Color.Clay, style: StrokeStyle(lineWidth: 2, lineCap: .round, dash: [10,10]))
@@ -55,7 +55,8 @@ struct ScreenHome: View {
                             .rotationEffect(.degrees(200))
                     }
                     .frame(width: 330, height: 330)
-                    .opacity(isExpanding ? 0 : 1)
+                    .opacity(isExpanding ? 0 : 1)*/
+                    
                     
                     // --- TEXTO CURVO ---
                     ZStack {
@@ -84,7 +85,7 @@ struct ScreenHome: View {
                         .fill(Color.SalviaGreen)
                         .frame(width: 222, height: 222)
                         .opacity(isExpanding ? 0 : 1) // <--- Se desvanece
-                        .scaleEffect(isExpanding ? 0.8 : 1) // Pequeño efecto de encogimiento al desaparecer
+                        //.scaleEffect(isExpanding ? 0.8 : 1) // Pequeño efecto de encogimiento al desaparecer
                         .zIndex(isExpanding ? 11 : 1)
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 1.5)) {
@@ -97,7 +98,7 @@ struct ScreenHome: View {
                                 }
                             }
                         }
-                }
+                }.zIndex(1)
                 
                 // Elementos inferiores
                 Group {

@@ -18,4 +18,10 @@ extension Color {
     
     // #CF9E76 - Color arcilla o madera clara
     static let Clay = Color(red: 207/255, green: 158/255, blue: 118/255)
+    
+    // #D1E6CD
+    static let RelaxGreen = Color(red: 209/255, green: 230/255, blue: 205/255)
+    
+    // #CDCDE6
+    static let RelaxLavanda = Color(red: 205/255, green: 205/255, blue: 230/255)
 }
