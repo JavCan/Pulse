@@ -17,6 +17,9 @@ struct ScreenRelaxation: View {
     @State private var isCountingDown = true
     @State private var secondsRemaining = 0
     @State private var timer: Timer? = nil
+    
+    @State private var showGrounding = false
+    @State private var showBodyReconnection = false
 
     let phrases = [
         "This is uncomfortable, not dangerous.",
@@ -67,6 +70,8 @@ struct ScreenRelaxation: View {
                     .transition(.opacity)
                 } else {
                     VStack(spacing: 40) {
+                        Spacer().frame(height: 40)
+                        
                         Text(phrases[phraseIndex])
                             .font(Font.custom("Comfortaa", size: 28).weight(.medium))
                             .foregroundColor(.white.opacity(0.9))
@@ -92,12 +97,30 @@ struct ScreenRelaxation: View {
                                 .monospacedDigit()
                         }
                         
-                        VStack(spacing: 5) {
+                        VStack(spacing: 20) {
                             Text(currentText)
                                 .font(Font.custom("Comfortaa", size: 28).weight(.bold))
                                 .foregroundColor(.white)
                                 .id(currentText)
                                 .transition(.opacity.animation(.easeInOut))
+
+                            Button(action: {
+                                withAnimation {
+                                    showGrounding = true
+                                }
+                            }) {
+                                VStack(spacing: 20) {
+                                    Text("Go to grounding exercises")
+                                        .font(Font.custom("Comfortaa", size: 18).weight(.bold))
+                                        .foregroundColor(.white)
+                                    
+                                    
+                                    Image(systemName: "arrow.right")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                            }
+                            .padding(.top, 70)
                         }
                     }
                     .transition(.opacity)
@@ -111,6 +134,45 @@ struct ScreenRelaxation: View {
             }
             startInitialCountdown()
         }
+        .onDisappear {
+            timer?.invalidate()
+        }
+        
+        if showGrounding {
+            ScreenGrounding(
+                onFinish: {
+                    withAnimation { showBodyReconnection = true }
+                },
+                onClose: {
+                    // Cerramos todo el flujo hasta el Home
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showGrounding = false
+                        showBodyReconnection = false
+                    }
+                    onDismiss()
+                }
+            )
+            .transition(.asymmetric(insertion: .opacity, removal: .opacity))
+            .zIndex(30)
+        }
+        
+        if showBodyReconnection {
+            ScreenBodyReconnection(
+                onFinish: {
+                    print("Siguiente: Descarga de tensión")
+                },
+                onClose: {
+                    // Cerramos todo el flujo hasta el Home
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showGrounding = false
+                        showBodyReconnection = false
+                    }
+                    onDismiss()
+                }
+            )
+            .transition(.asymmetric(insertion: .opacity, removal: .opacity))
+            .zIndex(40)
+        }
     }
 
     // MARK: - Lógica de Fases y Colores
@@ -120,7 +182,7 @@ struct ScreenRelaxation: View {
         secondsRemaining = 4
         
         // Cambia a RelaxGreen
-        backgroundColor = Color(red: 209/255, green: 230/255, blue: 205/255)
+        backgroundColor = Color.RelaxGreen
         
         withAnimation(.easeInOut(duration: 4)) {
             circleScale = 1.4
@@ -133,7 +195,7 @@ struct ScreenRelaxation: View {
         secondsRemaining = 4
         
         // Cambia a RelaxLavanda
-        backgroundColor = Color(red: 205/255, green: 205/255, blue: 230/255)
+        backgroundColor = Color.RelaxLavanda
         
         startPhaseTimer(duration: 4) { runExhalePhase() }
     }
@@ -143,7 +205,7 @@ struct ScreenRelaxation: View {
         secondsRemaining = 6
         
         // Cambia a GlaciarBlue
-        backgroundColor = Color(red: 205/255, green: 219/255, blue: 230/255)
+        backgroundColor = Color.GlaciarBlue
         
         withAnimation(.easeInOut(duration: 6)) {
             circleScale = 1.0

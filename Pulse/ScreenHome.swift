@@ -5,6 +5,17 @@ struct ScreenHome: View {
     @State private var selectedTab: TabItem = .home
     @State private var isExpanding = false // Controla la expansión
     @State private var showRelaxationScreen = false
+
+    
+    @State private var dailyAffirmation: String = ""
+    
+    let affirmations = [
+            "I am more than my circumstances dictate.",
+            "I am valued and helpful.",
+            "I am worthy of investing in myself.",
+            "I belong here, and I deserve to take up space.",
+            "I can hold two opposing feelings at once, it means I am processing."
+        ]
     
     // Configuración para el texto curvo
     let curvedText = "Feeling overwhelmed?"
@@ -23,7 +34,7 @@ struct ScreenHome: View {
                         .font(Font.custom("Comfortaa", size: 18).weight(.bold))
                         .foregroundColor(.Clay)
                     
-                    Text("I am more than my circumstances dictate.")
+                    Text(dailyAffirmation)
                         .font(Font.custom("Comfortaa", size: 16))
                         .foregroundColor(.Clay)
                         .multilineTextAlignment(.center)
@@ -105,7 +116,7 @@ struct ScreenHome: View {
                     Image(systemName: "arrow.up")
                         .font(.system(size: 40, weight: .semibold, design: .rounded))
                         .foregroundColor(Color.Clay)
-                        .padding(.top, 0)
+                        .padding(.top, 10)
                     
                     Text("Press me!")
                         .padding(.top, 15)
@@ -133,9 +144,18 @@ struct ScreenHome: View {
                 .zIndex(20)
                 .ignoresSafeArea()
             }
+            
+
+            
+            
         }
         // Esto permite que el círculo ignore los bordes de la pantalla al crecer
         .ignoresSafeArea(isExpanding ? .all : [])
+        .onAppear {
+            if dailyAffirmation.isEmpty{
+                dailyAffirmation = affirmations.randomElement() ?? affirmations [0]
+            }
+        }
         
         
     }

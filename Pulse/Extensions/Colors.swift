@@ -24,4 +24,10 @@ extension Color {
     
     // #CDCDE6
     static let RelaxLavanda = Color(red: 205/255, green: 205/255, blue: 230/255)
+
+    // #CDF0C6
+    static let MintCalm = Color(red: 205/255, green: 240/255, blue: 198/255)
+    
+    // #9DC9EB
+    static let SkySerene = Color(red: 157/255, green: 201/255, blue: 235/255)
 }
