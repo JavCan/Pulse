@@ -20,6 +20,8 @@ struct ScreenRelaxation: View {
     
     @State private var showGrounding = false
     @State private var showBodyReconnection = false
+    @State private var showTensionRelease = false
+    @State private var showCognitiveReorientation = false
 
     let phrases = [
         "This is uncomfortable, not dangerous.",
@@ -159,19 +161,68 @@ struct ScreenRelaxation: View {
         if showBodyReconnection {
             ScreenBodyReconnection(
                 onFinish: {
-                    print("Siguiente: Descarga de tensión")
+                    withAnimation { showTensionRelease = true }
                 },
                 onClose: {
                     // Cerramos todo el flujo hasta el Home
                     withAnimation(.easeInOut(duration: 0.8)) {
                         showGrounding = false
                         showBodyReconnection = false
+                        showTensionRelease = false
                     }
                     onDismiss()
                 }
             )
             .transition(.asymmetric(insertion: .opacity, removal: .opacity))
             .zIndex(40)
+        }
+        
+        if showTensionRelease {
+            ScreenTensionRelease(
+                onFinish: {
+                    // Siguiente paso: Reorientación Cognitiva
+                    withAnimation { 
+                        showCognitiveReorientation = true 
+                    }
+                },
+                onClose: {
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showGrounding = false
+                        showBodyReconnection = false
+                        showTensionRelease = false
+                        showCognitiveReorientation = false
+                    }
+                    onDismiss()
+                }
+            )
+            .transition(.asymmetric(insertion: .opacity, removal: .opacity))
+            .zIndex(50)
+        }
+        
+        if showCognitiveReorientation {
+            ScreenCognitiveReorientation(
+                onFinish: {
+                    // Fin del flujo, cerrar todo
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showGrounding = false
+                        showBodyReconnection = false
+                        showTensionRelease = false
+                        showCognitiveReorientation = false
+                    }
+                    onDismiss()
+                },
+                onClose: {
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showGrounding = false
+                        showBodyReconnection = false
+                        showTensionRelease = false
+                        showCognitiveReorientation = false
+                    }
+                    onDismiss()
+                }
+            )
+            .transition(.asymmetric(insertion: .opacity, removal: .opacity))
+            .zIndex(60)
         }
     }
 
