@@ -152,6 +152,12 @@ struct ScreenRelaxation: View {
                         showBodyReconnection = false
                     }
                     onDismiss()
+                },
+                onBack: {
+                    // Volver a ScreenRelaxation
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showGrounding = false
+                    }
                 }
             )
             .transition(.asymmetric(insertion: .opacity, removal: .opacity))
@@ -171,6 +177,12 @@ struct ScreenRelaxation: View {
                         showTensionRelease = false
                     }
                     onDismiss()
+                },
+                onBack: {
+                    // Volver a ScreenGrounding
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showBodyReconnection = false
+                    }
                 }
             )
             .transition(.asymmetric(insertion: .opacity, removal: .opacity))
@@ -193,6 +205,12 @@ struct ScreenRelaxation: View {
                         showCognitiveReorientation = false
                     }
                     onDismiss()
+                },
+                onBack: {
+                    // Volver a ScreenBodyReconnection
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showTensionRelease = false
+                    }
                 }
             )
             .transition(.asymmetric(insertion: .opacity, removal: .opacity))
@@ -219,6 +237,12 @@ struct ScreenRelaxation: View {
                         showCognitiveReorientation = false
                     }
                     onDismiss()
+                },
+                onBack: {
+                    // Volver a ScreenTensionRelease
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        showCognitiveReorientation = false
+                    }
                 }
             )
             .transition(.asymmetric(insertion: .opacity, removal: .opacity))

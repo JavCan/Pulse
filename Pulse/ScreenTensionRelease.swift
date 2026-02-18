@@ -3,11 +3,15 @@ import SwiftUI
 struct ScreenTensionRelease: View {
     var onFinish: () -> Void
     var onClose: () -> Void
+    var onBack: () -> Void
     
     // States
     @State private var currentStep = 0 // 0: Selection, 1: Instruction
     @State private var selectedOption: ReleaseOption? = nil
     @State private var viewOpacity: Double = 0.0
+    
+    // Intro state
+    @State private var showIntro = true
     
     enum ReleaseOption {
         case pressure
@@ -41,107 +45,162 @@ struct ScreenTensionRelease: View {
             Color.RelaxLavanda
                 .ignoresSafeArea()
             
-            // Close Button
-            VStack {
-                HStack {
+            if showIntro {
+                // INTRO SCREEN
+                VStack(spacing: 30) {
                     Spacer()
-                    Button(action: onClose) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(.white.opacity(0.8))
-                            .padding(.horizontal, 30)
-                            .padding(.top, 60)
+                    
+                    Text("Tension Release")
+                        .font(Font.custom("Comfortaa", size: 36).weight(.bold))
+                        .foregroundColor(.white)
+                    
+                    Text("Now let's release any remaining tension.")
+                        .font(Font.custom("Comfortaa", size: 24))
+                        .foregroundColor(.white.opacity(0.9))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                    
+                    Spacer()
+                    
+                    Button(action: startFlow) {
+                        Text("Begin")
+                            .font(Font.custom("Comfortaa", size: 22).weight(.bold))
+                            .foregroundColor(Color.RelaxLavanda)
+                            .padding(.vertical, 15)
+                            .padding(.horizontal, 60)
+                            .background(Color.white)
+                            .cornerRadius(30)
                     }
+                    .padding(.bottom, 60)
                 }
-                Spacer()
-            }
-            
-            VStack(spacing: 30) {
-                Spacer()
-                
-                if currentStep == 0 {
-                    // SELECTION SCREEN
-                    VStack(spacing: 20) {
-                        Image(systemName: "bolt.heart.fill")
-                            .font(.system(size: 50))
-                            .foregroundColor(.white.opacity(0.9))
-                        
-                        Text("Tension Release")
-                            .font(Font.custom("Comfortaa", size: 32).weight(.bold))
-                            .foregroundColor(.white)
-                        
-                        Text("Choose a way to release residual adrenaline.")
-                            .font(Font.custom("Comfortaa", size: 18))
-                            .foregroundColor(.white.opacity(0.9))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 40)
-                            .padding(.bottom, 20)
-                        
-                        // Option A
-                        Button(action: { selectOption(.pressure) }) {
-                            OptionCard(title: "Pressure", icon: "hands.clap.fill")
-                        }
-                        
-                        // Option B
-                        Button(action: { selectOption(.hug) }) {
-                            OptionCard(title: "Self Hug", icon: "figure.arms.open")
-                        }
-                    }
-                    .transition(.opacity)
-                } else {
-                    // INSTRUCTION SCREEN
-                    if let option = selectedOption {
-                        VStack(spacing: 30) {
-                           
-                            Spacer()
-                            
-                            Image(systemName: option.icon)
-                                .font(.system(size: 80))
-                                .foregroundColor(.white.opacity(0.9))
-                            
-                            Text(option.title)
-                                .font(Font.custom("Comfortaa", size: 28).weight(.bold))
-                                .foregroundColor(.white.opacity(0.8))
-                            
-                            Text(option.instruction)
-                                .font(Font.custom("Comfortaa", size: 24).weight(.medium))
-                                .foregroundColor(.white)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 40)
-                                .frame(height: 180)
-                                .id(option.title) // Force refresh animation
-                                .transition(.opacity)
-                            
-                            Spacer()
-                            
+                .transition(.opacity)
+                .zIndex(1)
+            } else {
+                // MAIN FLOW
+                ZStack {
+                    // Close Button
+                    VStack {
+                        HStack {
+                            // Back Button
                             Button(action: {
-                                // Finish flow
-                                onFinish()
+                                if currentStep == 1 {
+                                    withAnimation {
+                                        currentStep = 0
+                                        selectedOption = nil
+                                    }
+                                } else {
+                                    onBack()
+                                }
                             }) {
-                                Text("Done")
-                                    .font(Font.custom("Comfortaa", size: 20).weight(.bold))
-                                    .foregroundColor(Color.RelaxLavanda)
-                                    .padding(.vertical, 15)
-                                    .padding(.horizontal, 80)
-                                    .background(Color.white)
-                                    .cornerRadius(30)
+                                Image(systemName: "arrow.left.circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .padding(.horizontal, 30)
+                                    .padding(.top, 60)
                             }
                             
-                            Button("Back") {
-                                withAnimation {
-                                    currentStep = 0
-                                    selectedOption = nil
+                            Spacer()
+                            
+                            Button(action: onClose) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .padding(.horizontal, 30)
+                                    .padding(.top, 60)
+                            }
+                        }
+                        Spacer()
+                    }
+                    
+                    VStack(spacing: 30) {
+                        Spacer()
+                        
+                        if currentStep == 0 {
+                            // SELECTION SCREEN
+                            VStack(spacing: 20) {
+                                Image(systemName: "bolt.heart.fill")
+                                    .font(.system(size: 50))
+                                    .foregroundColor(.white.opacity(0.9))
+                                
+                                Text("Tension Release")
+                                    .font(Font.custom("Comfortaa", size: 32).weight(.bold))
+                                    .foregroundColor(.white)
+                                
+                                Text("Choose a way to release residual adrenaline.")
+                                    .font(Font.custom("Comfortaa", size: 18))
+                                    .foregroundColor(.white.opacity(0.9))
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 40)
+                                    .padding(.bottom, 20)
+                                
+                                // Option A
+                                Button(action: { selectOption(.pressure) }) {
+                                    OptionCard(title: "Pressure", icon: "hands.clap.fill")
+                                }
+                                
+                                // Option B
+                                Button(action: { selectOption(.hug) }) {
+                                    OptionCard(title: "Self Hug", icon: "figure.arms.open")
                                 }
                             }
-                            .foregroundColor(.white.opacity(0.7))
-                            .font(Font.custom("Comfortaa", size: 18))
-                            .padding(.bottom, 20)
+                            .transition(.opacity)
+                        } else {
+                            // INSTRUCTION SCREEN
+                            if let option = selectedOption {
+                                VStack(spacing: 30) {
+                                   
+                                    Spacer()
+                                    
+                                    Image(systemName: option.icon)
+                                        .font(.system(size: 80))
+                                        .foregroundColor(.white.opacity(0.9))
+                                    
+                                    Text(option.title)
+                                        .font(Font.custom("Comfortaa", size: 28).weight(.bold))
+                                        .foregroundColor(.white.opacity(0.8))
+                                    
+                                    Text(option.instruction)
+                                        .font(Font.custom("Comfortaa", size: 24).weight(.medium))
+                                        .foregroundColor(.white)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.horizontal, 40)
+                                        .frame(height: 180)
+                                        .id(option.title) // Force refresh animation
+                                        .transition(.opacity)
+                                    
+                                    Spacer()
+                                    
+                                    Button(action: {
+                                        // Finish flow
+                                        onFinish()
+                                    }) {
+                                        Text("Done")
+                                            .font(Font.custom("Comfortaa", size: 20).weight(.bold))
+                                            .foregroundColor(Color.RelaxLavanda)
+                                            .padding(.vertical, 15)
+                                            .padding(.horizontal, 80)
+                                            .background(Color.white)
+                                            .cornerRadius(30)
+                                    }
+                                    
+                                    Button("Back") {
+                                        withAnimation {
+                                            currentStep = 0
+                                            selectedOption = nil
+                                        }
+                                    }
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .font(Font.custom("Comfortaa", size: 18))
+                                    .padding(.bottom, 20)
+                                }
+                                .transition(.opacity)
+                            }
                         }
-                        .transition(.opacity)
+                        
+                        Spacer()
                     }
                 }
-                
-                Spacer()
+                .transition(.opacity)
             }
         }
         .opacity(viewOpacity)
@@ -149,6 +208,12 @@ struct ScreenTensionRelease: View {
             withAnimation(.easeIn(duration: 1.0)) {
                 viewOpacity = 1.0
             }
+        }
+    }
+    
+    func startFlow() {
+        withAnimation(.easeInOut(duration: 0.5)) {
+            showIntro = false
         }
     }
     
@@ -191,5 +256,5 @@ struct OptionCard: View {
 }
 
 #Preview {
-    ScreenTensionRelease(onFinish: {}, onClose: {})
+    ScreenTensionRelease(onFinish: {}, onClose: {}, onBack: {})
 }
