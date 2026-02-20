@@ -32,6 +32,7 @@ struct ScreenBodyReconnection: View {
                     Text("Body Reconnection")
                         .font(Font.custom("Comfortaa", size: 36).weight(.bold))
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
                     
                     Text("Now let's reconnect to your body.")
                         .font(Font.custom("Comfortaa", size: 24))

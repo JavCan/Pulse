@@ -82,6 +82,7 @@ struct ScreenRelaxation: View {
                             .frame(height: 80)
                             .id(phraseIndex)
                             .transition(.opacity.animation(.easeInOut(duration: 1.0)))
+                            .minimumScaleFactor(0.7)
                         
                         ZStack {
                             Circle()

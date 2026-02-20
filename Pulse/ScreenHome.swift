@@ -39,6 +39,8 @@ struct ScreenHome: View {
                         .foregroundColor(.Clay)
                         .multilineTextAlignment(.center)
                         .lineSpacing(4)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.7)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 30)
