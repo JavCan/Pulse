@@ -17,9 +17,9 @@ struct ScreenHome: View {
             "I can hold two opposing feelings at once, it means I am processing."
         ]
     
-    // Configuración para el texto curvo
-    let curvedText = "Feeling overwhelmed?"
-    let radius: Double = 165
+    // Configuración para la imagen
+    let imageWidth: CGFloat = 300
+    let imageHeight: CGFloat = 300
     
     var body: some View {
         ZStack {
@@ -55,62 +55,44 @@ struct ScreenHome: View {
                 
                 // Panic Attack button Section
                 ZStack {
-                    // Líneas punteadas exteriores (desaparecen al expandir)
-                    /*Group {
+           
+                    // --- IMAGEN DE TEXTO CURVO ---
+                    Image("Feeling_Overwhelmed")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: imageWidth, height: imageHeight)
+                        .offset(y: -115)
+                        .opacity(isExpanding ? 0 : 1)
+                    
+                    ZStack{
+                        // CÍRCULO AZUL (EL QUE SE EXPANDE)
                         Circle()
-                            .trim(from: 0.345, to: 0.629)
-                            .stroke(Color.Clay, style: StrokeStyle(lineWidth: 2, lineCap: .round, dash: [10,10]))
-                            .rotationEffect(.degrees(-10))
+                            .fill(Color.GlaciarBlue)
+                            .frame(width: 257, height: 257)
+                        // Cuando isExpanding es true, escala 15 veces su tamaño para cubrir toda la pantalla
+                            .scaleEffect(isExpanding ? 15 : 1)
+                            .animation(.easeInOut(duration: 2), value: isExpanding)
+                            .zIndex(isExpanding ? 10 : 0) // Se pone encima de todo al crecer
                         
+                        // CÍRCULO VERDE (EL BOTÓN)
                         Circle()
-                            .trim(from: 0.345, to: 0.629)
-                            .stroke(Color.Clay, style: StrokeStyle(lineWidth: 2, lineCap: .round, dash: [10,10]))
-                            .rotationEffect(.degrees(200))
-                    }
-                    .frame(width: 330, height: 330)
-                    .opacity(isExpanding ? 0 : 1)*/
-                    
-                    
-                    // --- TEXTO CURVO ---
-                    ZStack {
-                        ForEach(Array(curvedText.enumerated()), id: \.offset) { index, letter in
-                            Text(String(letter))
-                                .font(Font.custom("Comfortaa", size: 26).weight(.light))
-                                .foregroundColor(.Clay)
-                                .offset(y: -radius)
-                                .rotationEffect(letterRotation(index: index))
-                        }
-                    }
-                    .rotationEffect(.degrees(4))
-                    .opacity(isExpanding ? 0 : 1)
-                    
-                    // CÍRCULO AZUL (EL QUE SE EXPANDE)
-                    Circle()
-                        .fill(Color.GlaciarBlue)
-                        .frame(width: 257, height: 257)
-                    // Cuando isExpanding es true, escala 15 veces su tamaño para cubrir toda la pantalla
-                        .scaleEffect(isExpanding ? 15 : 1)
-                        .animation(.easeInOut(duration: 2), value: isExpanding)
-                        .zIndex(isExpanding ? 10 : 0) // Se pone encima de todo al crecer
-                    
-                    // CÍRCULO VERDE (EL BOTÓN)
-                    Circle()
-                        .fill(Color.SalviaGreen)
-                        .frame(width: 222, height: 222)
-                        .opacity(isExpanding ? 0 : 1) // <--- Se desvanece
-                        //.scaleEffect(isExpanding ? 0.8 : 1) // Pequeño efecto de encogimiento al desaparecer
-                        .zIndex(isExpanding ? 11 : 1)
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 1.5)) {
-                                isExpanding = true
-                            }
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                withAnimation(.none) { // .none elimina cualquier transición extra
-                                    showRelaxationScreen = true
+                            .fill(Color.SalviaGreen)
+                            .frame(width: 222, height: 222)
+                            .opacity(isExpanding ? 0 : 1) // <--- Se desvanece
+                            //.scaleEffect(isExpanding ? 0.8 : 1) // Pequeño efecto de encogimiento al desaparecer
+                            .zIndex(isExpanding ? 11 : 1)
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 1.5)) {
+                                    isExpanding = true
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                    withAnimation(.none) { // .none elimina cualquier transición extra
+                                        showRelaxationScreen = true
+                                    }
                                 }
                             }
-                        }
+                    }.offset(y: 0)
                 }.zIndex(1)
                 
                 // Elementos inferiores
@@ -118,7 +100,7 @@ struct ScreenHome: View {
                     Image(systemName: "arrow.up")
                         .font(.system(size: 40, weight: .semibold, design: .rounded))
                         .foregroundColor(Color.Clay)
-                        .padding(.top, 10)
+
                     
                     Text("Press me!")
                         .padding(.top, 15)
@@ -162,13 +144,7 @@ struct ScreenHome: View {
         
     }
     
-    // Función para calcular la rotación de cada letra (ya la tenías)
-    private func letterRotation(index: Int) -> Angle {
-        let letterSpacing: Double = 6.7
-        let totalLetters = Double(curvedText.count)
-        let startAngle = -(totalLetters * letterSpacing) / 2
-        return .degrees(startAngle + (Double(index) * letterSpacing))
-    }
+
 }
 
 #Preview {
