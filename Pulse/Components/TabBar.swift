@@ -29,7 +29,7 @@ struct CustomTabBar: View {
         .padding(.horizontal, 32)
         .background(
             RoundedRectangle(cornerRadius: 24)
-                .fill(Color.VanillaCream)
+                .fill(Color.PalidSand)
         )
         .padding(.horizontal, 20)
     }

@@ -27,113 +27,106 @@ struct ScreenHome: View {
             Color.Cream
                 .ignoresSafeArea()
             
-            VStack {
-                // Affirmation Card
-                VStack(spacing: 20) {
-                    Text("Today's Affirmation")
-                        .font(Font.custom("Comfortaa", size: 18).weight(.bold))
-                        .foregroundColor(.Clay)
-                    
-                    Text(dailyAffirmation)
-                        .font(Font.custom("Comfortaa", size: 16))
-                        .foregroundColor(.Clay)
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(4)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.7)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 30)
-                .padding(.horizontal, 20)
-                .background(Color.PalidSand.opacity(0.8))
-                .cornerRadius(30)
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
-                .opacity(isExpanding ? 0 : 1) // Se desvanece al expandir
-                
-                Spacer()
-                
-                // Panic Attack button Section
-                ZStack {
-           
-                    // --- IMAGEN DE TEXTO CURVO ---
-                    Image("Feeling_Overwhelmed")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: imageWidth, height: imageHeight)
-                        .offset(y: -115)
-                        .opacity(isExpanding ? 0 : 1)
-                    
-                    ZStack{
-                        // CÍRCULO AZUL (EL QUE SE EXPANDE)
-                        Circle()
-                            .fill(Color.GlaciarBlue)
-                            .frame(width: 257, height: 257)
-                        // Cuando isExpanding es true, escala 15 veces su tamaño para cubrir toda la pantalla
-                            .scaleEffect(isExpanding ? 15 : 1)
-                            .animation(.easeInOut(duration: 2), value: isExpanding)
-                            .zIndex(isExpanding ? 10 : 0) // Se pone encima de todo al crecer
+            switch selectedTab {
+            case .home:
+                VStack {
+                    // Affirmation Card
+                    VStack(spacing: 20) {
+                        Text("Today's Affirmation")
+                            .font(Font.custom("Comfortaa", size: 18).weight(.bold))
+                            .foregroundColor(.Clay)
                         
-                        // CÍRCULO VERDE (EL BOTÓN)
-                        Circle()
-                            .fill(Color.SalviaGreen)
-                            .frame(width: 222, height: 222)
-                            .opacity(isExpanding ? 0 : 1) // <--- Se desvanece
-                            //.scaleEffect(isExpanding ? 0.8 : 1) // Pequeño efecto de encogimiento al desaparecer
-                            .zIndex(isExpanding ? 11 : 1)
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 1.5)) {
-                                    isExpanding = true
-                                }
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                    withAnimation(.none) { // .none elimina cualquier transición extra
-                                        showRelaxationScreen = true
+                        Text(dailyAffirmation)
+                            .font(Font.custom("Comfortaa", size: 16))
+                            .foregroundColor(.Clay)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.7)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 30)
+                    .padding(.horizontal, 20)
+                    .background(Color.PalidSand.opacity(0.8))
+                    .cornerRadius(30)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 10)
+                    .opacity(isExpanding ? 0 : 1)
+                    
+                    Spacer()
+                    
+                    // Panic Attack button Section
+                    ZStack {
+                        Image("Feeling_Overwhelmed")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: imageWidth, height: imageHeight)
+                            .offset(y: -115)
+                            .opacity(isExpanding ? 0 : 1)
+                        
+                        ZStack {
+                            Circle()
+                                .fill(Color.GlaciarBlue)
+                                .frame(width: 257, height: 257)
+                                .scaleEffect(isExpanding ? 15 : 1)
+                                .animation(.easeInOut(duration: 2), value: isExpanding)
+                                .zIndex(isExpanding ? 10 : 0)
+                            
+                            Circle()
+                                .fill(Color.SalviaGreen)
+                                .frame(width: 222, height: 222)
+                                .opacity(isExpanding ? 0 : 1)
+                                .zIndex(isExpanding ? 11 : 1)
+                                .onTapGesture {
+                                    withAnimation(.easeInOut(duration: 1.5)) {
+                                        isExpanding = true
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                        withAnimation(.none) {
+                                            showRelaxationScreen = true
+                                        }
                                     }
                                 }
-                            }
-                    }.offset(y: 0)
-                }.zIndex(1)
-                
-                // Elementos inferiores
-                Group {
-                    Image(systemName: "arrow.up")
-                        .font(.system(size: 40, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color.Clay)
-
+                        }
+                        .offset(y: 0)
+                    }
+                    .zIndex(1)
                     
-                    Text("Press me!")
-                        .padding(.top, 15)
-                        .font(Font.custom("Comfortaa", size: 26).weight(.bold))
-                        .foregroundColor(.Clay)
-                }
-                .opacity(isExpanding ? 0 : 1)
-                
-                Spacer().frame(height: 80)
-                
-                CustomTabBar(selectedTab: $selectedTab)
-                    .padding(.bottom, 8)
+                    Group {
+                        Image(systemName: "arrow.up")
+                            .font(.system(size: 40, weight: .semibold, design: .rounded))
+                            .foregroundColor(Color.Clay)
+                        
+                        Text("Press me!")
+                            .padding(.top, 15)
+                            .font(Font.custom("Comfortaa", size: 26).weight(.bold))
+                            .foregroundColor(.Clay)
+                    }
                     .opacity(isExpanding ? 0 : 1)
+                    
+                    Spacer().frame(height: 80)
+                    
+                    CustomTabBar(selectedTab: $selectedTab)
+                        .padding(.bottom, 8)
+                        .opacity(isExpanding ? 0 : 1)
+                }
+                
+            case .breathe:
+                ScreenLeaf(selectedTab: $selectedTab)
             }
             
             if showRelaxationScreen {
                 ScreenRelaxation(onDismiss: {
-                    // Al cerrar, reiniciamos ambos estados
                     withAnimation(.easeInOut(duration: 0.8)) {
                         showRelaxationScreen = false
                         isExpanding = false
                     }
                 })
-                .transition(.opacity) // Un desvanecimiento suave al regresar
+                .transition(.opacity)
                 .zIndex(20)
                 .ignoresSafeArea()
             }
-            
-
-            
-            
         }
-        // Esto permite que el círculo ignore los bordes de la pantalla al crecer
         .ignoresSafeArea(isExpanding ? .all : [])
         .onAppear {
             if dailyAffirmation.isEmpty{
