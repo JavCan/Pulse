@@ -15,7 +15,7 @@ let articlesData: [ArticleData] = [
     ArticleData(
         id: 1,
         title: "What is a Panic Attack and Why Does It Feel So Intense?",
-        cardSubtitle: "I am more than my circumstances dictate.",
+        cardSubtitle: "The sudden fright that activates your body to the max.",
         imageName: "article_1",
         thumbnailName: "article_1_thumb",
         paragraphs: [
@@ -30,12 +30,13 @@ let articlesData: [ArticleData] = [
     ArticleData(
         id: 2,
         title: "Why does this happen to me \"out of nowhere\" if I'm not stressed?",
-        cardSubtitle: "I am more than my circumstances dictate.",
+        cardSubtitle: "False alarms that ignore apparent calm.",
         imageName: "article_2",
         thumbnailName: "article_2_thumb",
         paragraphs: [
             "Panic attacks can strike without warning, even if you feel calm. They often seem to come \"out of nowhere\" because hidden triggers or body signals build up quietly.",
             "Your brain's fear center might misfire, spotting a false danger like a change in heartbeat or stomach flip. Past experiences, genes, or imbalances in brain chemicals can make this happen randomly, skipping obvious stress.",
+            " ",
             "Breathing shifts or caffeine can spark it too, turning a tiny sensation into full panic fast. These episodes peak quick but fade, showing your body just overreacted."
         ],
         sources: [
@@ -47,12 +48,13 @@ let articlesData: [ArticleData] = [
     ArticleData(
         id: 3,
         title: "What happens in my brain during a panic attack?",
-        cardSubtitle: "I am more than my circumstances dictate.",
+        cardSubtitle: "How fear takes control in seconds.",
         imageName: "article_3",
         thumbnailName: "article_3_thumb",
         paragraphs: [
             "During a panic attack, your brain's fear center called the amygdala goes into overdrive, sounding a false alarm as if danger is near. It signals the release of stress hormones like adrenaline, ramping up your heart rate and breathing to prepare for \"fight or flight.\"",
             "This creates a feedback loop: the amygdala senses normal body changes—like a faster heartbeat—as threats, triggering more panic. The prefrontal cortex, which calms fear, gets overwhelmed and can't stop the surge, making everything feel out of control.",
+            " ",
             "Once the attack peaks in minutes, hormone levels drop, and calm returns as the brain resets."
         ],
         sources: [
@@ -227,6 +229,16 @@ struct ArticleDetailView: View {
                     .padding(.top, 80)
                     .padding(.bottom, 100) // Extra padding for floating button
                 }
+                .mask {
+                    LinearGradient(
+                        stops: [
+                            .init(color: .black, location: 0.9),
+                            .init(color: .clear, location: 1.0)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
             }
             
             // Floating Close Button
@@ -282,7 +294,7 @@ struct ArticleCard: View {
                     .font(.system(size: 14, weight: .semibold))
         }
         .padding(16)
-        .background(Color.PalidSand.opacity(0.5))
+        .background(Color.PalidSand.opacity(1))
         .cornerRadius(22)
     }
 }
