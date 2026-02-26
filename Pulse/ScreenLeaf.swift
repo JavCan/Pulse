@@ -69,7 +69,13 @@ let articlesData: [ArticleData] = [
 struct ScreenLeaf: View {
     
     @Binding var selectedTab: TabItem
+    @StateObject private var moodStore = MoodStore()
+    
+    // Mood animation state
     @State private var selectedMood: Int? = nil
+    @State private var moodAnimPhase: Int = 0  // 0=idle, 1=fade others, 2=center, 3=pop, 4=navigate
+    @State private var showCalendar = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -92,67 +98,133 @@ struct ScreenLeaf: View {
                             }
                             
                             // MARK: - Nervous System Care Section
-                        VStack(spacing: 14) {
-                            Text("Nervous System Care")
-                                .font(Font.custom("Comfortaa", size: 24).weight(.medium))
-                                .foregroundColor(.Clay)
-                                .padding(.top, 20)
-                            
-                            // How are you feeling today?
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("How are you feeling today?")
-                                    .font(Font.custom("Comfortaa", size: 15).weight(.medium))
+                            VStack(spacing: 14) {
+                                Text("Nervous System Care")
+                                    .font(Font.custom("Comfortaa", size: 24).weight(.medium))
                                     .foregroundColor(.Clay)
+                                    .padding(.top, 20)
                                 
-                                HStack(spacing: 12) {
-                                    ForEach(1...5, id: \.self) { mood in
-                                        Image("\(mood)")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 48, height: 48)
-                                            .opacity(selectedMood == nil || selectedMood == mood ? 1.0 : 0.4)
-                                            .scaleEffect(selectedMood == mood ? 1.15 : 1.0)
-                                            .animation(.easeInOut(duration: 0.2), value: selectedMood)
-                                            .onTapGesture {
-                                                withAnimation {
-                                                    selectedMood = (selectedMood == mood) ? nil : mood
+                                // How are you feeling today?
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text("How are you feeling today?")
+                                        .font(Font.custom("Comfortaa", size: 15).weight(.medium))
+                                        .foregroundColor(.Clay)
+                                    
+                                    HStack(spacing: 12) {
+                                        ForEach(1...5, id: \.self) { mood in
+                                            Image("\(mood)")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 48, height: 48)
+                                                // Phase 1: fade out non-selected
+                                                .opacity(moodOpacity(for: mood))
+                                                // Phase 2+3: scale effects
+                                                .scaleEffect(moodScale(for: mood))
+                                                .animation(.easeInOut(duration: 0.3), value: moodAnimPhase)
+                                                .animation(.easeInOut(duration: 0.2), value: selectedMood)
+                                                .onTapGesture {
+                                                    guard moodAnimPhase == 0 else { return }
+                                                    startMoodAnimation(mood: mood)
                                                 }
-                                            }
+                                        }
                                     }
+                                    .frame(maxWidth: .infinity, alignment: moodAnimPhase >= 2 ? .center : .leading)
+                                    .animation(.easeInOut(duration: 0.3), value: moodAnimPhase)
                                 }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(18)
+                                .background(Color.white.opacity(0.9))
+                                .cornerRadius(20)
+                                .padding(.horizontal, 14)
+                                
+                                // Calm Sounds & Guided Practices
+                                HStack(spacing: 12) {
+                                    SmallCard(title: "Calm Sounds")
+                                    SmallCard(title: "Guided Practices")
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.bottom, 15)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(18)
-                            .background(Color.white.opacity(0.9))
-                            .cornerRadius(20)
-                            .padding(.horizontal, 14)
-                            
-                            // Calm Sounds & Guided Practices
-                            HStack(spacing: 12) {
-                                SmallCard(title: "Calm Sounds")
-                                SmallCard(title: "Guided Practices")
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.bottom, 15)
+                            .background(Color.GlaciarBlue.opacity(0.5))
+                            .cornerRadius(30)
                         }
-                        .background(Color.GlaciarBlue.opacity(0.5))
-                        .cornerRadius(30)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        .padding(.bottom, 100)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
-                    .padding(.bottom, 100)
+                    
+                    Spacer(minLength: 0)
                 }
                 
-                Spacer(minLength: 0)
+                // Tab Bar
+                VStack {
+                    Spacer()
+                    CustomTabBar(selectedTab: $selectedTab)
+                        .padding(.bottom, 8)
+                }
             }
-            
-            // Tab Bar
-            VStack {
-                Spacer()
-                CustomTabBar(selectedTab: $selectedTab)
-                    .padding(.bottom, 8)
+            .navigationDestination(isPresented: $showCalendar) {
+                MoodCalendarView(moodStore: moodStore)
             }
         }
+    }
+    
+    // MARK: - Mood Animation Helpers
+    
+    private func moodOpacity(for mood: Int) -> Double {
+        switch moodAnimPhase {
+        case 0:
+            return selectedMood == nil || selectedMood == mood ? 1.0 : 0.4
+        case 1, 2:
+            return selectedMood == mood ? 1.0 : 0.0
+        case 3:
+            return selectedMood == mood ? 0.0 : 0.0
+        default:
+            return 1.0
+        }
+    }
+    
+    private func moodScale(for mood: Int) -> CGFloat {
+        guard selectedMood == mood else { return 1.0 }
+        switch moodAnimPhase {
+        case 1: return 1.15
+        case 2: return 1.3   // pop up
+        case 3: return 0.8   // shrink before fade
+        default: return 1.0
+        }
+    }
+    
+    private func startMoodAnimation(mood: Int) {
+        selectedMood = mood
+        moodStore.setMood(mood)
+        
+        // Phase 1: fade out others
+        withAnimation(.easeInOut(duration: 0.3)) {
+            moodAnimPhase = 1
+        }
+        
+        // Phase 2: center + pop up
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                moodAnimPhase = 2
+            }
+        }
+        
+        // Phase 3: shrink + fade out
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                moodAnimPhase = 3
+            }
+        }
+        
+        // Phase 4: navigate to calendar
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            showCalendar = true
+            // Reset animation state for when user comes back
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                moodAnimPhase = 0
+                selectedMood = nil
+            }
         }
     }
 }
