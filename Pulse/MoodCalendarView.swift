@@ -4,6 +4,8 @@ struct MoodCalendarView: View {
     @ObservedObject var moodStore: MoodStore
     @Environment(\.dismiss) var dismiss
     
+    @State private var selectedDateForEdit: Date? = nil
+    
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
     private let weekdaySymbols = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
@@ -23,8 +25,8 @@ struct MoodCalendarView: View {
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(weekdaySymbols, id: \.self) { day in
                         Text(day)
-                            .font(Font.custom("Comfortaa", size: 11).weight(.medium))
-                            .foregroundColor(.Clay.opacity(0.5))
+                            .font(Font.custom("Comfortaa", size: 15).weight(.medium))
+                            .foregroundColor(.Clay.opacity(0.8))
                     }
                 }
                 .padding(.horizontal, 20)
@@ -32,9 +34,8 @@ struct MoodCalendarView: View {
                 // Calendar grid
                 LazyVGrid(columns: columns, spacing: 10) {
                     // Empty cells for offset
-                    ForEach(0..<firstWeekdayOffset, id: \.self) { _ in
+                    ForEach(-firstWeekdayOffset..<0, id: \.self) { _ in
                         Color.clear
-                            .frame(height: 52)
                     }
                     
                     // Day cells
@@ -42,54 +43,123 @@ struct MoodCalendarView: View {
                         let date = dateFor(day: day)
                         let mood = moodStore.mood(for: date)
                         let isToday = Calendar.current.isDateInToday(date)
+                        let isFuture = Calendar.current.startOfDay(for: date) > Calendar.current.startOfDay(for: Date())
                         
-                        VStack(spacing: 2) {
-                            Text("\(day)")
-                                .font(Font.custom("Comfortaa", size: 12).weight(isToday ? .bold : .regular))
-                                .foregroundColor(isToday ? .SalviaGreen : .Clay.opacity(0.7))
-                            
-                            if let mood = mood {
-                                Image("\(mood)")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 28, height: 28)
-                            } else {
-                                Circle()
-                                    .fill(Color.PalidSand.opacity(0.4))
-                                    .frame(width: 28, height: 28)
+                        Button {
+                            withAnimation(.spring()) {
+                                selectedDateForEdit = date
+                            }
+                        } label: {
+                            VStack(spacing: 2) {
+                                Text("\(day)")
+                                    .font(Font.custom("Comfortaa", size: 12).weight(isToday ? .bold : .regular))
+                                    .foregroundColor(isToday ? .SalviaGreen : (isFuture ? .Clay.opacity(0.3) : .Clay.opacity(0.7)))
+                                
+                                if let mood = mood {
+                                    Image("\(mood)")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 28, height: 28)
+                                } else {
+                                    Circle()
+                                        .fill(Color.PalidSand.opacity(isFuture ? 0.2 : 0.5))
+                                        .frame(width: 28, height: 28)
+                                }
                             }
                         }
+                        .disabled(isFuture)
                         .frame(height: 52)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(isToday ? Color.GlaciarBlue.opacity(0.3) : Color.clear)
+                                .fill(isToday ? Color.GlaciarBlue.opacity(0.5) : Color.clear)
                         )
                     }
                 }
                 .padding(.horizontal, 20)
                 
+                // Insight Card
+                if let insight = moodStore.moodInsight {
+                    HStack(spacing: 15) {
+                        //Image(systemName: "sparkles")
+                          //  .font(.system(size: 24))
+                            //.foregroundColor(.SalviaGreen)
+                        
+                        Text(insight)
+                            .font(Font.custom("Comfortaa", size: 20))
+                            .foregroundColor(.Clay)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                    }
+                    .padding(20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.PalidSand.opacity(0.8))
+                    .cornerRadius(20)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 50)
+                }
+                
                 Spacer()
             }
             .padding(.top, 40)
+
             
-            // Floating Close Button
-            VStack {
-                Spacer()
-                Button(action: {
-                    dismiss()
-                }) {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(width: 50, height: 50)
-                        .background(Color.red.opacity(0.5))
-                        .clipShape(Circle())
-                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+            // Custom Horizontal Picker Overlay
+            if let editDate = selectedDateForEdit {
+                Color.black.opacity(0.2)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            selectedDateForEdit = nil
+                        }
+                    }
+                    .zIndex(1)
+                
+                VStack {
+                    Spacer()
+                    
+                    VStack(spacing: 20) {
+                        Text("How did you feel?")
+                            .font(Font.custom("Comfortaa", size: 18).weight(.bold))
+                            .foregroundColor(.Clay)
+                        
+                        HStack(spacing: 15) {
+                            ForEach(1...5, id: \.self) { emotionId in
+                                let isSelected = moodStore.mood(for: editDate) == emotionId
+                                
+                                Button {
+                                    withAnimation(.spring()) {
+                                        selectedDateForEdit = nil
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        moodStore.setMood(emotionId, for: editDate)
+                                    }
+                                } label: {
+                                    Image("\(emotionId)")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 40, height: 40)
+                                        .padding(8)
+                                        .background(
+                                            Circle()
+                                                .fill(isSelected ? Color.GlaciarBlue.opacity(0.5) : Color.PalidSand.opacity(0.5))
+                                        )
+                                        .scaleEffect(isSelected ? 1.1 : 1.0)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 25)
+                    .padding(.horizontal, 20)
+                    .background(Color.Cream)
+                    .cornerRadius(30)
+                    .shadow(color: Color.black.opacity(0.15), radius: 10, y: 5)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 100)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
-                .padding(.bottom, 30)
+                .zIndex(2)
             }
         }
-        .navigationBarBackButtonHidden(true)
     }
     
     // MARK: - Calendar Helpers

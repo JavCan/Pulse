@@ -106,9 +106,17 @@ struct ScreenLeaf: View {
                                 
                                 // How are you feeling today?
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("How are you feeling today?")
-                                        .font(Font.custom("Comfortaa", size: 15).weight(.medium))
-                                        .foregroundColor(.Clay)
+                                    HStack(alignment: .top) {
+                                        Text("How are you feeling today?")
+                                            .font(Font.custom("Comfortaa", size: 15).weight(.medium))
+                                            .foregroundColor(.Clay)
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .foregroundColor(.Clay.opacity(0.6))
+                                            .font(.system(size: 14, weight: .semibold))
+                                    }
                                     
                                     HStack(spacing: 12) {
                                         ForEach(1...5, id: \.self) { mood in
@@ -128,19 +136,30 @@ struct ScreenLeaf: View {
                                                 }
                                         }
                                     }
-                                    .frame(maxWidth: .infinity, alignment: moodAnimPhase >= 2 ? .center : .leading)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                     .animation(.easeInOut(duration: 0.3), value: moodAnimPhase)
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(18)
                                 .background(Color.white.opacity(0.9))
                                 .cornerRadius(20)
+                                .onTapGesture {
+                                    guard moodAnimPhase == 0 else { return }
+                                    showCalendar = true
+                                }
                                 .padding(.horizontal, 14)
                                 
                                 // Calm Sounds & Guided Practices
                                 HStack(spacing: 12) {
-                                    SmallCard(title: "Calm Sounds")
-                                    SmallCard(title: "Guided Practices")
+                                    NavigationLink(destination: Text("Calm Sounds View").font(Font.custom("Comfortaa", size: 24)).foregroundColor(.Clay)) {
+                                        SmallCard(title: "Calm Sounds")
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    
+                                    NavigationLink(destination: Text("Guided Practices View").font(Font.custom("Comfortaa", size: 24)).foregroundColor(.Clay)) {
+                                        SmallCard(title: "Guided Practices")
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
                                 .padding(.horizontal, 14)
                                 .padding(.bottom, 15)
@@ -175,10 +194,8 @@ struct ScreenLeaf: View {
         switch moodAnimPhase {
         case 0:
             return selectedMood == nil || selectedMood == mood ? 1.0 : 0.4
-        case 1, 2:
+        case 1:
             return selectedMood == mood ? 1.0 : 0.0
-        case 3:
-            return selectedMood == mood ? 0.0 : 0.0
         default:
             return 1.0
         }
@@ -188,8 +205,6 @@ struct ScreenLeaf: View {
         guard selectedMood == mood else { return 1.0 }
         switch moodAnimPhase {
         case 1: return 1.15
-        case 2: return 1.3   // pop up
-        case 3: return 0.8   // shrink before fade
         default: return 1.0
         }
     }
@@ -198,27 +213,13 @@ struct ScreenLeaf: View {
         selectedMood = mood
         moodStore.setMood(mood)
         
-        // Phase 1: fade out others
+        // Phase 1: fade out others and scale selected
         withAnimation(.easeInOut(duration: 0.3)) {
             moodAnimPhase = 1
         }
         
-        // Phase 2: center + pop up
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                moodAnimPhase = 2
-            }
-        }
-        
-        // Phase 3: shrink + fade out
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                moodAnimPhase = 3
-            }
-        }
-        
-        // Phase 4: navigate to calendar
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+        // Navigate to calendar after a short delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             showCalendar = true
             // Reset animation state for when user comes back
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -377,9 +378,17 @@ struct SmallCard: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(title)
-                .font(Font.custom("Comfortaa", size: 14).weight(.medium))
-                .foregroundColor(.Clay)
+            HStack(alignment: .top) {
+                Text(title)
+                    .font(Font.custom("Comfortaa", size: 14).weight(.medium))
+                    .foregroundColor(.Clay)
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.Clay.opacity(0.6))
+                    .font(.system(size: 14, weight: .semibold))
+            }
             
             Spacer()
         }
