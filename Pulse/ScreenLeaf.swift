@@ -70,6 +70,7 @@ struct ScreenLeaf: View {
     
     @Binding var selectedTab: TabItem
     @StateObject private var moodStore = MoodStore()
+    @StateObject private var soundStore = SoundStore()
     
     // Mood animation state
     @State private var selectedMood: Int? = nil
@@ -151,13 +152,19 @@ struct ScreenLeaf: View {
                                 
                                 // Calm Sounds & Guided Practices
                                 HStack(spacing: 12) {
-                                    NavigationLink(destination: Text("Calm Sounds View").font(Font.custom("Comfortaa", size: 24)).foregroundColor(.Clay)) {
-                                        SmallCard(title: "Calm Sounds")
+                                    NavigationLink(destination: ScreenCalmSounds()) {
+                                        SmallCard(title: "Calm Sounds", 
+                                                  isPlayable: true, 
+                                                  isPlaying: soundStore.isPlaying,
+                                                  currentSoundTitle: soundStore.currentSound?.title,
+                                                  onPlay: {
+                                            soundStore.toggleRandom()
+                                        })
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     
-                                    NavigationLink(destination: Text("Guided Practices View").font(Font.custom("Comfortaa", size: 24)).foregroundColor(.Clay)) {
-                                        SmallCard(title: "Guided Practices")
+                                    NavigationLink(destination: ScreenCalmRoutines()) {
+                                        SmallCard(title: "Calm Routines")
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                 }
@@ -372,12 +379,33 @@ struct ArticleCard: View {
     }
 }
 
+// MARK: - Audio Visualizer
+struct AudioVisualizer: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 2) {
+            ForEach(0..<4, id: \.self) { i in
+                RoundedRectangle(cornerRadius: 1)
+                    .fill(Color.SalviaGreen.opacity(0.8))
+                    .frame(width: 2, height: isAnimating ? CGFloat([14, 10, 16, 12][i]) : 4)
+                    .animation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true).delay(Double(i) * 0.1), value: isAnimating)
+            }
+        }
+        .onAppear { isAnimating = true }
+    }
+}
+
 // MARK: - Small Card
 struct SmallCard: View {
     let title: String
+    var isPlayable: Bool = false
+    var isPlaying: Bool = false
+    var currentSoundTitle: String? = nil
+    var onPlay: (() -> Void)? = nil
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top) {
                 Text(title)
                     .font(Font.custom("Comfortaa", size: 14).weight(.medium))
@@ -391,6 +419,29 @@ struct SmallCard: View {
             }
             
             Spacer()
+            
+            if isPlayable {
+                HStack(spacing: 12) {
+                    Button(action: { 
+                        onPlay?()
+                    }) {
+                        Image(systemName: isPlaying ? "stop.circle.fill" : "play.circle.fill")
+                            .font(.system(size: 38))
+                            .foregroundColor(.SalviaGreen.opacity(0.8))
+                            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+                    }
+                    
+                    if isPlaying, let soundTitle = currentSoundTitle {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(soundTitle)
+                                .font(Font.custom("Comfortaa", size: 12).weight(.bold))
+                                .foregroundColor(.Clay)
+                            
+                            AudioVisualizer()
+                        }
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 80)
