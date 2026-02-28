@@ -17,9 +17,9 @@ struct ScreenCalmSounds: View {
                     Button(action: { dismiss() }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.Clay)
+                            .foregroundColor(.white)
                             .padding(10)
-                            .background(Color.white.opacity(0.5))
+                            .background(Color.Clay.opacity(0.5))
                             .clipShape(Circle())
                     }
                     
@@ -27,7 +27,7 @@ struct ScreenCalmSounds: View {
                     
                     Text("Calm Sounds")
                         .font(Font.custom("Comfortaa", size: 24).weight(.bold))
-                        .foregroundColor(.Clay)
+                        .foregroundColor(.white)
                     
                     Spacer()
                     
@@ -61,26 +61,40 @@ struct SoundCard: View {
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            // Background Gradient mimicking a landscape
-            LinearGradient(colors: [
-                Color(sound.color).opacity(0.8),
-                Color(sound.color).opacity(0.4)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-            
-            // Subtle texture/icon representation
-            VStack {
-                Spacer()
-                HStack {
+            // Background: photo if available, else gradient
+            if let imageName = sound.backgroundImageName {
+                Image(imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .clipped()
+                
+                // Dark overlay for text readability
+                LinearGradient(
+                    colors: [Color.black.opacity(0.55), Color.black.opacity(0.2)],
+                    startPoint: .bottomLeading,
+                    endPoint: .topTrailing
+                )
+            } else {
+                LinearGradient(colors: [
+                    Color(sound.color).opacity(0.8),
+                    Color(sound.color).opacity(0.4)
+                ], startPoint: .topLeading, endPoint: .bottomTrailing)
+                
+                // Subtle texture/icon
+                VStack {
                     Spacer()
-                    Image(systemName: sound.icon)
-                        .font(.system(size: 80))
-                        .foregroundColor(.white.opacity(0.15))
-                        .rotationEffect(.degrees(-15))
-                        .padding(.trailing, -20)
-                        .padding(.bottom, -20)
+                    HStack {
+                        Spacer()
+                        Image(systemName: sound.icon)
+                            .font(.system(size: 80))
+                            .foregroundColor(.white.opacity(0.15))
+                            .rotationEffect(.degrees(-15))
+                            .padding(.trailing, -20)
+                            .padding(.bottom, -20)
+                    }
                 }
+                .clipped()
             }
-            .clipped()
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
@@ -100,7 +114,7 @@ struct SoundCard: View {
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.white)
                         .frame(width: 50, height: 50)
-                        .background(Color.white.opacity(0.3))
+                        .background(Color.Clay.opacity(0.5))
                         .clipShape(Circle())
                 }
             }

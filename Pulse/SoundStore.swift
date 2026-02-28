@@ -6,8 +6,9 @@ struct SoundData: Identifiable {
     let title: String
     let description: String
     let icon: String // SF Symbol
-    let color: String // Color name for gradient
+    let color: String // Color name for gradient fallback
     let filename: String? // Actual filename in bundle
+    var backgroundImageName: String? = nil // Asset catalog image name
 }
 
 class SoundStore: ObservableObject {
@@ -18,16 +19,11 @@ class SoundStore: ObservableObject {
     private var lastPlayedSoundId: String? = nil
     
     let sounds: [SoundData] = [
-        SoundData(id: "rain", title: "Rain", description: "Soft summer rain or rain on a roof", icon: "cloud.rain.fill", color: "GlaciarBlue", filename: "rain"),
-        SoundData(id: "ocean", title: "Ocean Waves", description: "Rhythmic waves on the shore", icon: "wave.3.right", color: "SkySerene", filename: "ocean"),
-        SoundData(id: "stream", title: "Streams", description: "Constant murmur of running water", icon: "drop.fill", color: "RelaxGreen", filename: "stream"),
-        SoundData(id: "wind", title: "Wind", description: "Soft breeze through the trees", icon: "wind", color: "MintCalm", filename: "wind"),
-        SoundData(id: "storm", title: "Distant Storm", description: "Soft, distant thunder and rain", icon: "cloud.bolt.rain.fill", color: "Clay", filename: "storm"),
-        SoundData(id: "forest", title: "Forest", description: "Leaves rustling and morning birds", icon: "leaf.fill", color: "SalviaGreen", filename: "forest"),
-        SoundData(id: "cat", title: "Cat Purr", description: "Vibrant and comforting purring", icon: "heart.fill", color: "PalidSand", filename: "cat"),
-        SoundData(id: "fire", title: "Fire", description: "Crackling logs in a fireplace", icon: "flame.fill", color: "Clay", filename: "fire"),
-        SoundData(id: "noise", title: "Pink/White Noise", description: "Constant waterfall-like mask", icon: "speaker.wave.2.fill", color: "RelaxLavanda", filename: "noise"),
-        SoundData(id: "snow", title: "Snow Crunch", description: "Soft, crisp sound of walking on snow", icon: "snowflake", color: "Cream", filename: "snow")
+        SoundData(id: "rain", title: "Rain", description: "Soft summer rain or rain on a roof", icon: "cloud.rain.fill", color: "GlaciarBlue", filename: "Rain on the Window Sound Effect", backgroundImageName: "rain"),
+        SoundData(id: "ocean", title: "Ocean Waves", description: "Rhythmic waves on the shore", icon: "wave.3.right", color: "SkySerene", filename: "Ocean Waves Sound Effect", backgroundImageName: "ocean_waves"),
+        SoundData(id: "stream", title: "Streams", description: "Constant murmur of running water", icon: "drop.fill", color: "RelaxGreen", filename: "Small River Sound Effect", backgroundImageName: "stream"),
+        SoundData(id: "wind", title: "Wind", description: "Soft breeze through the trees", icon: "wind", color: "MintCalm", filename: "Wind Sounds 318856", backgroundImageName: "wind"),
+        SoundData(id: "storm", title: "Distant Storm", description: "Soft, distant thunder and rain", icon: "cloud.bolt.rain.fill", color: "Clay", filename: "Distant Storm Sound Effects", backgroundImageName: "distant_storm"),
     ]
     
     func toggleSound(_ sound: SoundData) {
@@ -43,7 +39,6 @@ class SoundStore: ObservableObject {
         
         guard let filename = sound.filename,
               let url = Bundle.main.url(forResource: filename, withExtension: "mp3") else {
-            // If file doesn't exist, we just simulate playing for now
             currentSound = sound
             isPlaying = true
             print("Simulating playback of \(sound.title). File not found in bundle.")
@@ -53,6 +48,7 @@ class SoundStore: ObservableObject {
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.numberOfLoops = -1 // Loop infinitely
+            audioPlayer?.prepareToPlay()
             audioPlayer?.play()
             currentSound = sound
             isPlaying = true

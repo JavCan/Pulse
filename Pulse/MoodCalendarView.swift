@@ -80,15 +80,12 @@ struct MoodCalendarView: View {
                 // Insight Card
                 if let insight = moodStore.moodInsight {
                     HStack(spacing: 15) {
-                        //Image(systemName: "sparkles")
-                          //  .font(.system(size: 24))
-                            //.foregroundColor(.SalviaGreen)
-                        
                         Text(insight)
                             .font(Font.custom("Comfortaa", size: 20))
                             .foregroundColor(.Clay)
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
+                            .minimumScaleFactor(0.7)
                     }
                     .padding(20)
                     .frame(maxWidth: .infinity, alignment: .leading)

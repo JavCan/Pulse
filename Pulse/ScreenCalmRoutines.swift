@@ -14,9 +14,9 @@ struct ScreenCalmRoutines: View {
                     Button(action: { dismiss() }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.Clay)
+                            .foregroundColor(.white)
                             .padding(10)
-                            .background(Color.white.opacity(0.5))
+                            .background(Color.Clay.opacity(0.5))
                             .clipShape(Circle())
                     }
                     
@@ -24,7 +24,7 @@ struct ScreenCalmRoutines: View {
                     
                     Text("Calm Routines")
                         .font(Font.custom("Comfortaa", size: 24).weight(.bold))
-                        .foregroundColor(.Clay)
+                        .foregroundColor(.white)
                     
                     Spacer()
                     
@@ -37,7 +37,7 @@ struct ScreenCalmRoutines: View {
                     VStack(spacing: 18) {
                         Text("Choose a routine")
                             .font(Font.custom("Comfortaa", size: 14))
-                            .foregroundColor(.Clay.opacity(0.7))
+                            .foregroundColor(.white.opacity(0.8))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 4)
                         
@@ -65,7 +65,7 @@ struct RoutineCard: View {
     var themeGradient: [Color] {
         switch routine.theme {
         case .morning: return [Color.GlaciarBlue.opacity(0.6), Color.Cream.opacity(0.9)]
-        case .evening: return [Color.VanillaCream, Color.Clay.opacity(0.3)]
+        case .evening: return [Color.VanillaCream, Color.Clay.opacity(0.2)]
         case .sleep:   return [Color(red: 0.1, green: 0.13, blue: 0.2), Color(red: 0.16, green: 0.2, blue: 0.32)]
         }
     }
@@ -79,7 +79,7 @@ struct RoutineCard: View {
     
     var subtitleColor: Color {
         switch routine.theme {
-        case .morning, .evening: return Color.Clay.opacity(0.7)
+        case .morning, .evening: return Color.Clay.opacity(0.9)
         case .sleep: return Color.white.opacity(0.6)
         }
     }

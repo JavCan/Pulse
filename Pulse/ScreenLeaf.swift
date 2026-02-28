@@ -104,6 +104,7 @@ struct ScreenLeaf: View {
                                     .font(Font.custom("Comfortaa", size: 24).weight(.medium))
                                     .foregroundColor(.Clay)
                                     .padding(.top, 20)
+                                    .minimumScaleFactor(0.7)
                                 
                                 // How are you feeling today?
                                 VStack(alignment: .leading, spacing: 12) {
@@ -164,7 +165,7 @@ struct ScreenLeaf: View {
                                     .buttonStyle(PlainButtonStyle())
                                     
                                     NavigationLink(destination: ScreenCalmRoutines()) {
-                                        SmallCard(title: "Calm Routines")
+                                        SmallCard(title: "Calm Routines", iconName: "sparkles")
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                 }
@@ -402,6 +403,7 @@ struct SmallCard: View {
     var isPlayable: Bool = false
     var isPlaying: Bool = false
     var currentSoundTitle: String? = nil
+    var iconName: String? = nil
     var onPlay: (() -> Void)? = nil
     
     var body: some View {
@@ -410,6 +412,7 @@ struct SmallCard: View {
                 Text(title)
                     .font(Font.custom("Comfortaa", size: 14).weight(.medium))
                     .foregroundColor(.Clay)
+                    .minimumScaleFactor(0.7)
                 
                 Spacer()
                 
@@ -418,7 +421,19 @@ struct SmallCard: View {
                     .font(.system(size: 14, weight: .semibold))
             }
             
-            Spacer()
+            if let icon = iconName {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Image(systemName: icon)
+                        .font(.system(size: 32))
+                        .foregroundColor(.SalviaGreen.opacity(0.8))
+                    Spacer()
+                }
+                Spacer()
+            } else {
+                Spacer()
+            }
             
             if isPlayable {
                 HStack(spacing: 12) {
@@ -436,6 +451,7 @@ struct SmallCard: View {
                             Text(soundTitle)
                                 .font(Font.custom("Comfortaa", size: 12).weight(.bold))
                                 .foregroundColor(.Clay)
+                                .minimumScaleFactor(0.7)
                             
                             AudioVisualizer()
                         }

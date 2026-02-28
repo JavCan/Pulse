@@ -77,20 +77,20 @@ extension RoutineData {
         title: "Morning Regulation",
         subtitle: "Start the day steady, not rushed",
         durationDisplay: "5 min",
-        emoji: "🌅",
+        emoji: "🌤️",
         theme: .morning,
         phases: [
             RoutinePhase(label: "Breath Sync", instruction: "Inhale slowly.\nExhale longer.",
-                         subInstruction: "4 counts in · 6 counts out", duration: 3,
+                         subInstruction: "4 counts in · 6 counts out", duration: 1,
                          isBreathing: true, inhaleCount: 4, exhaleCount: 6),
             RoutinePhase(label: "Body Wake-Up", instruction: "Roll your shoulders back.\nGently stretch your neck.\nUnclench your jaw.",
-                         subInstruction: "Release overnight tension", duration: 3),
+                         subInstruction: "Release overnight tension", duration: 1),
             RoutinePhase(label: "Intentional Grounding", instruction: "Feel your feet on the floor.\nNotice the temperature of the air.\nName one thing you're grateful for.",
-                         subInstruction: "Stay present", duration: 3),
+                         subInstruction: "Stay present", duration: 1),
             RoutinePhase(label: "Nervous System Priming", instruction: "Today, move slowly.\nYou don't need to rush.",
-                         subInstruction: "Set the tone gently", duration: 3),
+                         subInstruction: "Set the tone gently", duration: 1),
             RoutinePhase(label: "Closing Anchor", instruction: "You are steady.\nStart gently.",
-                         subInstruction: "", duration: 3)
+                         subInstruction: "", duration: 1)
         ]
     )
     
@@ -99,20 +99,20 @@ extension RoutineData {
         title: "Evening Wind Down",
         subtitle: "Release the weight of the day",
         durationDisplay: "7 min",
-        emoji: "🌆",
+        emoji: "🌇",
         theme: .evening,
         phases: [
             RoutinePhase(label: "Slow Breathing", instruction: "Breathe in for 4.\nBreathe out for 6.",
-                         subInstruction: "Let your body slow down", duration: 3,
+                         subInstruction: "Let your body slow down", duration: 1,
                          isBreathing: true, inhaleCount: 4, exhaleCount: 6),
             RoutinePhase(label: "Tension Release", instruction: "Tighten your fists.\nRelease.\n\nLift your shoulders.\nDrop them.\n\nPress your toes.\nRelax.",
-                         subInstruction: "Release residual tension", duration: 3),
+                         subInstruction: "Release residual tension", duration: 1),
             RoutinePhase(label: "Mental Unload", instruction: "What felt heavy today?\nYou can let it rest for now.",
-                         subInstruction: "No analysis needed", duration: 3),
+                         subInstruction: "No analysis needed", duration: 1),
             RoutinePhase(label: "Sensory Soften", instruction: "Let your breathing slow naturally.",
-                         subInstruction: "Settle into stillness", duration: 3),
+                         subInstruction: "Settle into stillness", duration: 1),
             RoutinePhase(label: "Closure", instruction: "Today is complete.\nYou did enough.",
-                         subInstruction: "", duration: 3)
+                         subInstruction: "", duration: 1)
         ]
     )
     
@@ -125,14 +125,14 @@ extension RoutineData {
         theme: .sleep,
         phases: [
             RoutinePhase(label: "Extended Exhale", instruction: "Breathe in for 4.\nBreathe out for 8.",
-                         subInstruction: "Signal your vagus nerve", duration:3,
+                         subInstruction: "Signal your vagus nerve", duration:1,
                          isBreathing: true, inhaleCount: 4, exhaleCount: 8),
             RoutinePhase(label: "Body Drop", instruction: "Feel the weight of your body.\nLet the bed hold you.\nRelease your tongue.",
-                         subInstruction: "A relaxed tongue means safety", duration: 3),
+                         subInstruction: "A relaxed tongue means safety", duration: 1),
             RoutinePhase(label: "Narrow Attention", instruction: "Focus only on your breath.\nIf thoughts come, let them pass.",
-                         subInstruction: "No complexity needed", duration: 3),
+                         subInstruction: "No complexity needed", duration: 1),
             RoutinePhase(label: "Final Phrase", instruction: "Nothing else is needed tonight.\nRest.",
-                         subInstruction: "", duration: 3)
+                         subInstruction: "", duration: 1)
         ]
     )
 }
